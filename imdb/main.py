@@ -4,6 +4,7 @@
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt 
+import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
@@ -22,7 +23,7 @@ def sanatize(df):
   # impute null values 
   num_df.fillna(value=0, axis=1, inplace=True)
   return(num_df)
-  
+
 def process(df):
   # standardization
   X = df.values
@@ -33,6 +34,26 @@ def process(df):
   for idx, l in enumerate(comparison_list):
     gridsize = 35 if idx == 1 else 45
     df.plot(y=l[0], x=l[1], kind='hexbin', gridsize=gridsize, colormap='cubehelix', title='{} vs {}'.format(l[0], l[1]))
+
+  # Pearson's Correlation
+  f, ax = plt.subplots(figsize=(10,10))
+  plt.title("Pearson's Correlation of Dimensionality")
+  hm = sns.heatmap(df.astype(float).corr(), linewidths=0.25, vmax=1, square=True, cmap="YlGnBu", linecolor="black")
+  plt.yticks(rotation=0)
+  plt.xticks(rotation=90)
+
+  # Explained Variance
+  mean_vec = np.mean(X_std, axis=0)
+  cov_mat = np.cov(X_std.T)
+  eig_val, eig_vec = np.linalg.eig(cov_mat)
+
+  # PCA
+  # 90% of variance captured
+  pca = PCA(n_components=9)
+  x_9d = pca.fit_transform(X_std)
+  plt.figure(figsize=(7,7))
+  plt.scatter(x_9d[:,0], x_9d[:,1], c='goldenrod', alpha=0.5)
+  plt.ylim(-10,30)
   plt.show()
 
 def main(): 
@@ -41,16 +62,3 @@ def main():
   
 if __name__ == "__main__":
   main()
-
-
-
-
-
-
-
-
-
-
-
-
-
