@@ -46,6 +46,20 @@ def process(df):
   mean_vec = np.mean(X_std, axis=0)
   cov_mat = np.cov(X_std.T)
   eig_val, eig_vec = np.linalg.eig(cov_mat)
+  
+  # (eig_val, eig_vec) tuples
+  eig_pair = [(np.abs(eig_val[i], eig_vec[:,i]) for i in range(len(eig_val)))]
+  eig_pair.sort(key = (lambda x: x[0]), reverse=True)
+  total = sum(eig_val)
+  exp_var = [(i/total)*100 for i in sorted(eig_val, reverse=True)] # individual explained variance 
+  # cumulative explained variance 
+  cum_exp_var = np.cumsum(exp_var)
+  plt.figure(figsize=(8, 5))
+  plt.bar(range(16), var_exp, alpha=0.3333, align='center', label='individual explained variance', color = 'g')
+  plt.step(range(16), cum_var_exp, where='mid',label='cumulative explained variance')
+  plt.ylabel('Explained variance ratio')
+  plt.xlabel('Principal components')
+  plt.legend(loc='best')
 
   # PCA
   # 90% of variance captured
